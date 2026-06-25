@@ -35,7 +35,7 @@ public class UserService : IUserService
     }
     public async Task<Guid> Add(CreatingUserRequest request)
     {
-        var hashedPassword = _passwordHasher.Generate(request.PasswordHash);
+        var hashedPassword = _passwordHasher.Generate(request.Password);
         UserEntity user = new UserEntity()
         {
             Id = Guid.NewGuid(),
@@ -55,5 +55,9 @@ public class UserService : IUserService
     public async Task Update(Guid id,UpdateUserRequest request)
     {
         await _userRepository.Update(id,request);
+    }
+    public async Task ChangeRole(Guid userId,UserRole role)
+    {
+        await _userRepository.SaveChanges(userId, role);
     }
 }

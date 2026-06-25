@@ -19,12 +19,12 @@ public class BookingService : IBookingService
         return await _BookingRepository.GetWithDetails();
     }
 
-    public async Task<Guid> Add(CreatingBookingRequest request)
+    public async Task<Guid> Add(Guid userId,CreatingBookingRequest request)
     {
-        var bookingsOfUser = await _BookingRepository.GetListByUserId(request.UserId);
+        var bookingsOfUser = await _BookingRepository.GetListByUserId(userId);
         if(bookingsOfUser.Count() >= 2)
         {
-            throw new ArgumentOutOfRangeException(nameof(request.UserId),"Количество заказов пользователя уже равно двум, больше нельзя");
+            throw new ArgumentOutOfRangeException(nameof(userId),"Количество заказов пользователя уже равно двум, больше нельзя");
         }
         var scooterIsBusy = await _BookingRepository.GetByScooterId(request.ScooterId);
         if(scooterIsBusy != null)
@@ -34,7 +34,7 @@ public class BookingService : IBookingService
         BookingEntity booking = new BookingEntity()
         {
             Id = Guid.NewGuid(),
-            UserId = request.UserId,
+            UserId = userId,
             ScooterId = request.ScooterId,
             StartTime = DateTime.UtcNow
         }; 

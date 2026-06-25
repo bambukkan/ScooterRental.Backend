@@ -8,4 +8,6 @@ public interface IUserService
     public Task<Guid> Add(CreatingUserRequest request);
     public Task Delete(Guid id);
     public Task Update(Guid id,UpdateUserRequest request);
+
+    public Task ChangeRole(Guid userId,UserRole role);
 }

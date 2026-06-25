@@ -8,5 +8,6 @@ public interface IUserRepository
     public Task Add(UserEntity User);
     public Task Delete(Guid id);
     public Task Update(Guid id,UpdateUserRequest request);
+    public Task SaveChanges(Guid id,UserRole role);
 
 }

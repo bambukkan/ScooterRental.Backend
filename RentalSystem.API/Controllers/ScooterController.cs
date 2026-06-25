@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
-[Authorize]
 [Route("Scooters")]
 public class ScooterController : ControllerBase
 {
@@ -30,18 +29,21 @@ public class ScooterController : ControllerBase
     {
         return Ok( await _service.GetBySerialNumber(serNum));
     }
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreatingScooterRequest request)
     {
         var scooterId = await _service.Add(request);
         return Ok(scooterId);
     }
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _service.Delete(id);
         return Ok(id);
     }
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id,[FromBody] UpdateScooterRequest request)
     {

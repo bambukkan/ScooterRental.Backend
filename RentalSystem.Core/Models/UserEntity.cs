@@ -9,6 +9,8 @@ public class UserEntity
     public string Surname{get; set;} = string.Empty; 
     public string PasswordHash {get;  set;} = string.Empty;
     public string Email {get; set;} = string.Empty;
+    public UserRole Role {get;set;} = UserRole.User;
+    //По умолчанию все регистрируются как обычные юзеры
     public List<BookingEntity> Bookings { get; set; } = new ();
     /*
     Короче, сделаю ограничение, пока не знаю где, но наверное в сервисе надо будет,

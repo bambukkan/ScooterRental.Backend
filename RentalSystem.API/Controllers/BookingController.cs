@@ -28,9 +28,20 @@ public class BookingController : ControllerBase
         return Ok( await _service.GetWithDetails());
     }
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Add([FromBody] CreatingBookingRequest request)
     {
-        var BookingId = await _service.Add(request);
+        // 1. Достаем строковое значение клейма "UserID", который мы зашивали в JwtProvider
+        var userIdClaim = User.FindFirst("UserID")?.Value;
+        
+        if (userIdClaim == null)
+        {
+            return Unauthorized(); // Если токена нет или он битый
+        }
+
+        Guid userId = Guid.Parse(userIdClaim);
+
+        var BookingId = await _service.Add(userId,request);
         return Ok(BookingId);
     }
     [HttpDelete("{id}")]
@@ -40,6 +51,7 @@ public class BookingController : ControllerBase
         return Ok(id);
     }
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> Update(Guid id)
     {
         await _service.Update(id);

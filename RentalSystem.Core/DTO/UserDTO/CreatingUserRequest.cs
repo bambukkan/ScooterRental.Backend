@@ -1,6 +1,6 @@
 public record CreatingUserRequest(
     string Name,
     string Surname,
-    string PasswordHash,
+    string Password,
     string Email
 );

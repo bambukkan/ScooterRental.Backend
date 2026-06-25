@@ -41,5 +41,12 @@ public class UserRepository : IUserRepository
             .SetProperty(u => u.Surname,request.Surname)
         );
     }
-
+    public async Task SaveChanges(Guid id,UserRole role)
+    {
+        await _context.Users.Where(u => u.Id == id).
+            ExecuteUpdateAsync(
+            s => s
+            .SetProperty(u => u.Role,role)
+        );
+    }
 }
