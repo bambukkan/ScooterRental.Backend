@@ -7,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+
+builder.Services.AddApiAuthentication(builder.Configuration);
+
 // Регистрируем в DI, чтобы ValidationFilter мог взять каждый валидатор с помощью GetService 
 builder.Services.AddValidatorsFromAssemblyContaining<CreatingUserRequestValidator>();
 // builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserRequestValidator>();
@@ -71,6 +74,9 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpLogging();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

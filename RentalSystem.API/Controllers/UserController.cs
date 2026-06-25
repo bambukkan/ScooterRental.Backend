@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 public class UserController : ControllerBase
 {
     private readonly IUserService _service;
-
     public UserController(IUserService service)
     {
         _service = service;
@@ -39,6 +38,8 @@ public class UserController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
     {
         var token =  await _service.Login(request);
+
+        Response.Cookies.Append("tasty-cookies",token);
 
         return Ok(token);
     }

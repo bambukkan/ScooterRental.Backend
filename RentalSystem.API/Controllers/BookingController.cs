@@ -1,11 +1,13 @@
 
 
 
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
+[Authorize]
 [Route("Bookings")]
+
 public class BookingController : ControllerBase
 {
     private readonly IBookingService _service;
