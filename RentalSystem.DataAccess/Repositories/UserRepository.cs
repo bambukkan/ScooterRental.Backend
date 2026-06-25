@@ -16,7 +16,13 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users.AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == userId);
-   }
+    }
+
+    public async Task<UserEntity?> GetByEmail(string email)
+    {
+        return await _context.Users.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Email == email);
+    }
     public async Task Add(UserEntity User)
     {
         await _context.Users.AddAsync(User);

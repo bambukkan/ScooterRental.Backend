@@ -6,7 +6,7 @@ using MyLibrary.API.Middlewares;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-
+builder.Services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 // Регистрируем в DI, чтобы ValidationFilter мог взять каждый валидатор с помощью GetService 
 builder.Services.AddValidatorsFromAssemblyContaining<CreatingUserRequestValidator>();
 // builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserRequestValidator>();
@@ -49,6 +49,9 @@ builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddScoped<IScooterService,ScooterService>();
 builder.Services.AddScoped<IBookingService,BookingService>();
 builder.Services.AddScoped<IUserService,UserService>();
+
+builder.Services.AddScoped<IJwtProvider,JwtProvider>();
+builder.Services.AddScoped<IPasswordHasher,PasswordHasher>();
 
 builder.Services.AddDbContext<RentalSystemDbContext>(
     options =>

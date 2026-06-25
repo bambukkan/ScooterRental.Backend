@@ -24,7 +24,7 @@ public class ScooterController : ControllerBase
         return Ok( await _service.GetWithDetails());
     }
     [HttpGet("by-SerialNumber")]
-    public async Task<IActionResult> GetBySerialNumber([FromQuery] string serNum)
+    public async Task<IActionResult> GetBySerialNumber([FromBody] string serNum)
     {
         return Ok( await _service.GetBySerialNumber(serNum));
     }

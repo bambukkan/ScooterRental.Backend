@@ -1,5 +1,6 @@
 
 
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -23,11 +24,23 @@ public class UserController : ControllerBase
     {
         return Ok( await _service.GetById(id));
     }
+    [HttpGet("by-email")]
+    public async Task<IActionResult> GetByEmail([FromQuery] string email)
+    {
+        return Ok( await _service.GetByEmail(email));
+    }
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreatingUserRequest request)
     {
         var userId = await _service.Add(request);
         return Ok(userId);
+    }
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
+    {
+        var token =  await _service.Login(request);
+
+        return Ok(token);
     }
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
@@ -41,4 +54,5 @@ public class UserController : ControllerBase
         await _service.Update(id,request);
         return Ok(id);
     }
+
 }
