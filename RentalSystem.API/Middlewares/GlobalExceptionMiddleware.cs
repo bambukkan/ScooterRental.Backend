@@ -1,3 +1,4 @@
+using RentalSystem.Core.Exceptions;
 namespace RentalSystem.API.Middlewares;
 
 public class GlobalExceptionMiddleware
@@ -17,6 +18,28 @@ public class GlobalExceptionMiddleware
         try
         {
             await _next(context);
+        }
+        catch (DomainException ex) 
+        {
+            _logger.LogWarning(ex, "Нарушение бизнес-правил: {Message}", ex.Message);
+
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                Error = ex.GetType().Name, 
+                Message = ex.Message
+            });
+        }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Нарушение бизнес-правил: {Message}", ex.Message);
+
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                Error = ex.GetType().Name, 
+                Message = ex.Message
+            });
         }
         catch (ArgumentOutOfRangeException ex) // Поймает: "Количество заказов пользователя уже равно двум..."
         {

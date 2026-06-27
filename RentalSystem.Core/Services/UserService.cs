@@ -1,4 +1,5 @@
 using RentalSystem.Core.Models;
+using RentalSystem.Core.Exceptions;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
@@ -28,7 +29,7 @@ public class UserService : IUserService
         var user = await _userRepository.GetByEmail(request.Email);
         if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
         {
-            throw new Exception("Failed to login");
+            throw new InvalidCredentialsException();
         }
         var token = _jwtProvider.GenerateToken(user); 
         var refreshToken = _jwtProvider.GenerateRefreshToken();
@@ -44,7 +45,7 @@ public class UserService : IUserService
 
         if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
         {
-            throw new Exception("Unauthorized / Token expired"); 
+            throw new UnauthorizedAccessException("Unauthorized / Token expired"); 
         }
         var newToken = _jwtProvider.GenerateToken(user);
 
@@ -64,7 +65,8 @@ public class UserService : IUserService
             Name = request.Name,
             Surname = request.Surname,
             PasswordHash = hashedPassword,
-            Email = request.Email
+            Email = request.Email,
+            Wallet = request.Wallet
         };        
         await _userRepository.Add(user);
         return user.Id;

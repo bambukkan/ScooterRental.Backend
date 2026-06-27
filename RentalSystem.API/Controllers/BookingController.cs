@@ -50,7 +50,7 @@ public class BookingController : ControllerBase
         await _service.Delete(id);
         return Ok(id);
     }
-    [HttpPut("{id}")]
+    [HttpPut]
     [Authorize]
     public async Task<IActionResult> Update(Guid bookingId)
     {

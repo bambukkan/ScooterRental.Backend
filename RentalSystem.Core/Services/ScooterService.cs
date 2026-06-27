@@ -1,4 +1,5 @@
 using RentalSystem.Core.Models;
+using RentalSystem.Core.Exceptions;
 public class ScooterService : IScooterService
 {
     private readonly IScooterRepository _ScooterRepository;
@@ -24,7 +25,7 @@ public class ScooterService : IScooterService
         var existingScooter = await _ScooterRepository.GetBySerialNumber(request.SerialNumber);
         if(existingScooter != null)
         {
-            throw new ArgumentException(nameof(request.SerialNumber),"Самокат с таким серийным номером уже зарегистрирован");
+            throw new ScooterAlreadyExistsException(request.SerialNumber);
         }
         ScooterEntity scooter = new ScooterEntity()
         {

@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using RentalSystem.Core.Models;
+using RentalSystem.Core.Exceptions;
 public class BookingService : IBookingService
 {
     private readonly IBookingRepository _BookingRepository;
@@ -22,14 +23,26 @@ public class BookingService : IBookingService
     public async Task<Guid> Add(Guid userId,CreatingBookingRequest request)
     {
         var bookingsOfUser = await _BookingRepository.GetListByUserId(userId);
+        var user = await _UserRepository.GetById(userId);
+        if(user == null)
+        {
+            throw new KeyNotFoundException($"Пользователь с ID {userId} не найден");
+        }
+
+        // тут будут специальные исключения
         if(bookingsOfUser.Count() >= 2)
         {
-            throw new ArgumentOutOfRangeException(nameof(userId),"Количество заказов пользователя уже равно двум, больше нельзя");
+            throw new UserLimitExceededException();
         }
         var scooterIsBusy = await _BookingRepository.GetByScooterId(request.ScooterId);
         if(scooterIsBusy != null)
         {
-            throw new ArgumentException(nameof(request.ScooterId),"Самокат уже занят!");
+            throw new ScooterAlreadyBusyException(request.ScooterId);
+        }
+        decimal minAmount = 100;
+        if(user.Wallet < minAmount)
+        {
+            throw new InsufficientFundsException(minAmount);
         }
         BookingEntity booking = new BookingEntity()
         {
@@ -50,9 +63,8 @@ public class BookingService : IBookingService
         var booking = await _BookingRepository.GetById(bookingId);
         var user = await _UserRepository.GetById(userId);
 
-        if(user == null) throw new Exception("Пользователь не найден");
-        if (booking == null) throw new Exception("Аренда не найдена");
-        if (booking.EndTime != null) throw new Exception("Эта аренда уже была завершена");
+        if (booking == null) throw new EntityNotFoundException($"Аренда с айди {bookingId} не найдена");
+        if (booking.EndTime != null) throw new BookingAlreadyFinishedException(bookingId);
 
         booking.EndTime = DateTime.UtcNow;
         TimeSpan duration = booking.EndTime.Value - booking.StartTime;
