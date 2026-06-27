@@ -58,8 +58,14 @@ public class BookingController : ControllerBase
         return Ok(id);
     }
     [HttpGet("ListByUserID")]
-    public async Task<IActionResult> GetListByUserId(Guid userId)
+    public async Task<IActionResult> GetListByUserId()
     {
+        var userIdClaim = User.FindFirst("UserId")?.Value;
+        if (userIdClaim == null)
+        {
+            return Unauthorized(); 
+        }
+        Guid userId = Guid.Parse(userIdClaim);
         return Ok( await _service.GetListByUserId(userId));
     }
     [HttpGet("ByScooterID")]

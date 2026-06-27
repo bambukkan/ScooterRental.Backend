@@ -23,7 +23,7 @@ public class UserService : IUserService
     {
         return await _userRepository.GetByEmail(email);
     }
-    public async Task<string> Login(LoginUserRequest request)
+    public async Task<(string, string)> Login(LoginUserRequest request)
     {
         var user = await _userRepository.GetByEmail(request.Email);
         if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
@@ -31,7 +31,29 @@ public class UserService : IUserService
             throw new Exception("Failed to login");
         }
         var token = _jwtProvider.GenerateToken(user); 
-        return token;
+        var refreshToken = _jwtProvider.GenerateRefreshToken();
+
+        DateTime refreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
+        await _userRepository.SaveChangesForRefreshToken(user.Id,refreshToken,refreshTokenExpiryTime);
+
+        return (token,refreshToken);
+    }
+    public async Task<(string,string,Guid)> Refresh(string refreshToken)
+    {
+        var user = await _userRepository.GetByRefreshToken(refreshToken);
+
+        if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+        {
+            throw new Exception("Unauthorized / Token expired"); 
+        }
+        var newToken = _jwtProvider.GenerateToken(user);
+
+        var newRefreshToken = _jwtProvider.GenerateRefreshToken();
+        DateTime refreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
+
+        await _userRepository.SaveChangesForRefreshToken(user.Id,newRefreshToken,refreshTokenExpiryTime);
+
+        return (newToken,newRefreshToken,user.Id);
     }
     public async Task<Guid> Add(CreatingUserRequest request)
     {

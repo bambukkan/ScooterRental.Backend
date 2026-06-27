@@ -37,17 +37,54 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
     {
-        var token =  await _service.Login(request);
+        var (token,refreshToken) =  await _service.Login(request);
 
-        Response.Cookies.Append("tasty-cookies",token,new CookieOptions
+        Response.Cookies.Append("Access-cookies",token,new CookieOptions
         {
-            HttpOnly = true,
-            Secure = true, // чтобы передавалось только по HTTPS
-            SameSite = SameSiteMode.Strict
+            HttpOnly = true, // Внутри сайта можно передавать только по сети в http-заголовках
+            Secure = true, // куки передается только по HTTPS
+            SameSite = SameSiteMode.Strict // Если нет этой строчки,то
+            // Если ты зайдешь на сторонний сайт хакера, то он может обратиться к твоему сайту
+            // Хакер куку не видит, но его запрос выполняется под твоим именем
+        });
+        Response.Cookies.Append("Refresh-cookies",refreshToken,new CookieOptions
+        {
+            HttpOnly = true, // Внутри сайта можно передавать только по сети в http-заголовках
+            Secure = true, // куки передается только по HTTPS
+            SameSite = SameSiteMode.Strict // Если нет этой строчки,то
+            // Если ты зайдешь на сторонний сайт хакера, то он может обратиться к твоему сайту
+            // Хакер куку не видит, но его запрос выполняется под твоим именем
         });
 
         return Ok(token);
     }
+    [HttpPut("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        string? refreshToken = Request.Cookies["Refresh-cookies"];
+        if(refreshToken == null)
+        {
+            return Unauthorized();
+        }
+
+        var (newToken,newRefreshToken,userId) = await _service.Refresh(refreshToken);
+
+        Response.Cookies.Append("Access-cookies",newToken,new CookieOptions
+        {
+            HttpOnly = true, 
+            Secure = true, 
+            SameSite = SameSiteMode.Strict 
+        });
+        Response.Cookies.Append("Refresh-cookies",newRefreshToken,new CookieOptions
+        {
+            HttpOnly = true, 
+            Secure = true, 
+            SameSite = SameSiteMode.Strict 
+        });
+
+        return Ok(userId);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {

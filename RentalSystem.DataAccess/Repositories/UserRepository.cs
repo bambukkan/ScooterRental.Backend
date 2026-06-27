@@ -49,4 +49,19 @@ public class UserRepository : IUserRepository
             .SetProperty(u => u.Role,role)
         );
     }
+    public async Task SaveChangesForRefreshToken(Guid userId,string refreshToken,DateTime refreshTokenExpiryTime)
+    {
+        await _context.Users.Where(u => u.Id == userId).
+            ExecuteUpdateAsync(
+            s => s
+            .SetProperty(u => u.RefreshToken,refreshToken)
+            .SetProperty(u => u.RefreshTokenExpiryTime,refreshTokenExpiryTime)
+        );
+    }
+    public async Task<UserEntity?> GetByRefreshToken(string refreshToken)
+    {
+        return await _context.Users.FirstOrDefaultAsync(
+            u => u.RefreshToken == refreshToken
+        );
+    }
 }

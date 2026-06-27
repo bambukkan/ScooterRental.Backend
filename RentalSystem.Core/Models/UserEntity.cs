@@ -18,4 +18,7 @@ public class UserEntity
     Тип вот в whoosh сдлеано что человек может арендовать максимум 2 самоката, но на втором самокате может поехать его друг допустим
     но друг не будет пользователем самоката, а будет тот кто покупал
     */
+
+    public string RefreshToken {get;set;} = string.Empty;
+    public DateTime RefreshTokenExpiryTime {get;set;}
 }

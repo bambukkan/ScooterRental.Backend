@@ -60,9 +60,9 @@ public class BookingService : IBookingService
         await _BookingRepository.UpdateFinish(booking);
     }
 
-    public async Task<List<BookingEntity>> GetListByUserId(Guid id)
+    public async Task<List<BookingEntity>> GetListByUserId(Guid userId)
     {
-        return await _BookingRepository.GetListByUserId(id);
+        return await _BookingRepository.GetListByUserId(userId);
     }
     public async Task<BookingEntity> GetByScooterId(Guid id)
     {

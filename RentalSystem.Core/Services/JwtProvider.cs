@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -50,7 +51,7 @@ public class JwtProvider : IJwtProvider
         var token = new JwtSecurityToken(
             claims: claims,                                            // Данные юзера (Payload)
             signingCredentials: signingCredentials,                     // Ключ и алгоритм защиты (Signature)
-            expires: DateTime.UtcNow.AddHours(_options.ExpiresHours)   // Время, когда токен "протухнет" (Header/Payload)
+            expires: DateTime.UtcNow.AddMinutes(_options.ExpiresMinutes)   // Время, когда токен "протухнет" (Header/Payload)
         );
 
         // 4. СЕРИАЛИЗАЦИЯ (Превращение в строку)
@@ -62,5 +63,9 @@ public class JwtProvider : IJwtProvider
 
         // Возвращаем готовую строку-токен (наш "паспорт" или "пропуск"), которую контроллер отдаст клиенту.
         return tokenValue;
+    }
+    public string GenerateRefreshToken()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));   
     }
 }
