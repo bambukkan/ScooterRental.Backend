@@ -21,4 +21,6 @@ public class UserEntity
 
     public string RefreshToken {get;set;} = string.Empty;
     public DateTime RefreshTokenExpiryTime {get;set;}
+
+    public decimal Wallet {get;set;} = 0;
 }

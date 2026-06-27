@@ -45,9 +45,12 @@ public class BookingService : IBookingService
     {
         await _BookingRepository.Delete(id);
     }
-    public async Task Update(Guid id)
+    public async Task Update(Guid bookingId, Guid userId)
     {
-        var booking = await _BookingRepository.GetById(id);
+        var booking = await _BookingRepository.GetById(bookingId);
+        var user = await _UserRepository.GetById(userId);
+
+        if(user == null) throw new Exception("Пользователь не найден");
         if (booking == null) throw new Exception("Аренда не найдена");
         if (booking.EndTime != null) throw new Exception("Эта аренда уже была завершена");
 
@@ -56,7 +59,9 @@ public class BookingService : IBookingService
         decimal pricePerMinute = 5.69m;
         int minutes = (int)Math.Ceiling(duration.TotalMinutes);
         booking.Price = minutes * pricePerMinute;
-
+        
+        var userWallet = user.Wallet - booking.Price;
+        await _UserRepository.SaveWalletChanges(user.Id,userWallet);
         await _BookingRepository.UpdateFinish(booking);
     }
 

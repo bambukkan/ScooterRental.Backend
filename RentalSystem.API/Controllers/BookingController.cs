@@ -52,10 +52,18 @@ public class BookingController : ControllerBase
     }
     [HttpPut("{id}")]
     [Authorize]
-    public async Task<IActionResult> Update(Guid id)
+    public async Task<IActionResult> Update(Guid bookingId)
     {
-        await _service.Update(id);
-        return Ok(id);
+        var userIdClaim = User.FindFirst("UserID")?.Value;
+        
+        if (userIdClaim == null)
+        {
+            return Unauthorized(); 
+        }
+
+        Guid userId = Guid.Parse(userIdClaim);
+        await _service.Update(bookingId,userId);
+        return Ok(bookingId);
     }
     [HttpGet("ListByUserID")]
     public async Task<IActionResult> GetListByUserId()

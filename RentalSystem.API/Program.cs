@@ -1,7 +1,7 @@
 
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using MyLibrary.API.Middlewares;
+using RentalSystem.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;

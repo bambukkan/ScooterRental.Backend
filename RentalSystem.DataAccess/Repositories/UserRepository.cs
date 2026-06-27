@@ -64,4 +64,12 @@ public class UserRepository : IUserRepository
             u => u.RefreshToken == refreshToken
         );
     }
+
+    public async Task SaveWalletChanges(Guid id,decimal wallet)
+    {
+        await _context.Users.Where(u => u.Id == id)
+            .ExecuteUpdateAsync(s => 
+            s.SetProperty(u => u.Wallet,wallet)
+            );
+    }
 }

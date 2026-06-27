@@ -12,4 +12,6 @@ public interface IUserRepository
 
     public Task SaveChangesForRefreshToken(Guid userId,string refreshToken,DateTime refreshTokenExpiryTime);
     public Task<UserEntity?> GetByRefreshToken(string refreshToken);
+
+    public Task SaveWalletChanges(Guid id,decimal wallet);
 }

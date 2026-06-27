@@ -1,4 +1,4 @@
-namespace MyLibrary.API.Middlewares;
+namespace RentalSystem.API.Middlewares;
 
 public class GlobalExceptionMiddleware
 {

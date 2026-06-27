@@ -6,7 +6,7 @@ public interface IBookingService
 
     public Task<Guid> Add(Guid userId,CreatingBookingRequest request);
     public Task Delete(Guid id);
-    public Task Update(Guid id);
+    public Task Update(Guid id,Guid userId);
 
     public Task<List<BookingEntity>> GetListByUserId(Guid userId);
     public Task<BookingEntity> GetByScooterId(Guid id);
