@@ -6,5 +6,6 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
     {
          RuleFor(b => b.Name).IsValidName("Имя");
          RuleFor(b => b.Surname).IsValidName("Фамилия");
+
     }
 }

@@ -41,29 +41,7 @@ public class GlobalExceptionMiddleware
                 Message = ex.Message
             });
         }
-        catch (ArgumentOutOfRangeException ex) // Поймает: "Количество заказов пользователя уже равно двум..."
-        {
-            _logger.LogWarning(ex,"Нарушение бизнес-правил: {Message}",ex.Message);
-
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsJsonAsync(new
-            {
-                Error = "BusinessValidationError",
-                Message = ex.Message
-            });
-        }
-        catch (ArgumentException ex) // Поймает: "Самокат уже занят!"
-        {
-            _logger.LogWarning(ex, "Ошибка запроса: {Message}", ex.Message);
-
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsJsonAsync(new
-            {
-                Error = "InvalidOperation",
-                Message = ex.Message
-            });
-        }
-        catch(Exception exception)// Поймает всё остальное (упала БД, NullReferenceException и т.д.)
+        catch(Exception exception)
         {
             _logger.LogError(exception,"Internal server error: {Message}", exception.Message);
 
